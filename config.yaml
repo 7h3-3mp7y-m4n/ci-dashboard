@@ -3,6 +3,12 @@ settings:
   refresh_interval: 60
   max_runs_per_workflow: 20
 
+# notify logic
+notify:
+  enabled: false
+  target_repo: "urunc-dev/ci-dashboard"
+  label: "ci-failure"
+
 log_analysis:
   max_signals_per_job: 40
 

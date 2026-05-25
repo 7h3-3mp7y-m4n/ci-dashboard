@@ -9,6 +9,7 @@ import (
 	"os"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -177,22 +178,34 @@ func (c *Client) setAuthHeaders(req *http.Request) {
 
 // get performs an authenticated GET request against the GitHub API
 func (c *Client) get(url string, v interface{}) error {
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return err
+	for attempt := 0; attempt < 3; attempt++ {
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return err
+		}
+		c.setAuthHeaders(req)
+		resp, err := c.httpClient.Do(req)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode == http.StatusTooManyRequests {
+			wait := 60 * time.Second
+			if reset := resp.Header.Get("X-RateLimit-Reset"); reset != "" {
+				if ts, err := strconv.ParseInt(reset, 10, 64); err == nil {
+					wait = time.Until(time.Unix(ts, 0)) + 2*time.Second
+				}
+			}
+			log.Printf("rate limited, waiting %s (attempt %d)...", wait, attempt+1)
+			time.Sleep(wait)
+			continue
+		}
+		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+			return fmt.Errorf("GitHub API returned HTTP %d for %s", resp.StatusCode, url)
+		}
+		return json.NewDecoder(resp.Body).Decode(v)
 	}
-	c.setAuthHeaders(req)
-
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return fmt.Errorf("GitHub API returned HTTP %d for %s", resp.StatusCode, url)
-	}
-	return json.NewDecoder(resp.Body).Decode(v)
+	return fmt.Errorf("still rate limited after retries: %s", url)
 }
 
 func parseGHTimestamp(line string) (time.Time, error) {
@@ -323,12 +336,10 @@ func (c *Client) fetchAndAnalyseLog(logURL string, failedSteps []Step) (snippet,
 		return "", "", err
 	}
 	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusNotFound {
-		return "", "", fmt.Errorf("log expired (404)")
-	}
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return "", "", fmt.Errorf("log fetch returned HTTP %d", resp.StatusCode)
+	if resp.StatusCode == http.StatusNotFound ||
+		resp.StatusCode == http.StatusGone || // 410
+		resp.StatusCode == http.StatusForbidden { // 403
+		return "", "", fmt.Errorf("log expired (%d)", resp.StatusCode)
 	}
 
 	// Build a time window that covers all failed steps, with a small buffer
@@ -741,6 +752,7 @@ func main() {
 		log.Printf("fetching jobs and logs for %s...", w.Name)
 		for i := range recent {
 			client.fetchJobsAndEnrich(&recent[i])
+			time.Sleep(300 * time.Millisecond)
 		}
 		summary := buildSummary(runs, w.Name, w.Description, w.Critical, w.Required)
 		summary.RecentRuns = recent

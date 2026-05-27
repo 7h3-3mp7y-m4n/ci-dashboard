@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-26T09:02:33.358390167Z",
+  "generated_at": "2026-05-27T01:08:38.353327061Z",
   "repo": "urunc-dev/urunc",
   "overall_health": 89.28571428571429,
   "workflows": [
@@ -8986,7 +8986,7 @@
       "total_runs": 20,
       "failed_runs": 0,
       "failure_rate": 0,
-      "avg_duration_secs": 18.55,
+      "avg_duration_secs": 18.35,
       "weather_history": [
         "success",
         "success",
@@ -8997,26 +8997,46 @@
         "success"
       ],
       "last_run": {
-        "id": 26425332597,
+        "id": 26483098397,
         "name": "Automatically close stale PRs",
         "status": "completed",
         "conclusion": "success",
-        "run_number": 443,
-        "created_at": "2026-05-26T00:24:02Z",
-        "updated_at": "2026-05-26T00:24:17Z",
-        "run_started_at": "2026-05-26T00:24:02Z",
-        "html_url": "https://github.com/urunc-dev/urunc/actions/runs/26425332597",
+        "run_number": 444,
+        "created_at": "2026-05-27T00:25:58Z",
+        "updated_at": "2026-05-27T00:26:16Z",
+        "run_started_at": "2026-05-27T00:25:58Z",
+        "html_url": "https://github.com/urunc-dev/urunc/actions/runs/26483098397",
         "jobs": [
           {
             "name": "stale",
             "conclusion": "success",
-            "duration_sec": 12,
-            "html_url": "https://github.com/urunc-dev/urunc/actions/runs/26425332597/job/77787671777"
+            "duration_sec": 15,
+            "html_url": "https://github.com/urunc-dev/urunc/actions/runs/26483098397/job/77984508004"
           }
         ],
         "run_attempt": 1
       },
       "recent_runs": [
+        {
+          "id": 26483098397,
+          "name": "Automatically close stale PRs",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 444,
+          "created_at": "2026-05-27T00:25:58Z",
+          "updated_at": "2026-05-27T00:26:16Z",
+          "run_started_at": "2026-05-27T00:25:58Z",
+          "html_url": "https://github.com/urunc-dev/urunc/actions/runs/26483098397",
+          "jobs": [
+            {
+              "name": "stale",
+              "conclusion": "success",
+              "duration_sec": 15,
+              "html_url": "https://github.com/urunc-dev/urunc/actions/runs/26483098397/job/77984508004"
+            }
+          ],
+          "run_attempt": 1
+        },
         {
           "id": 26425332597,
           "name": "Automatically close stale PRs",
@@ -9393,26 +9413,6 @@
               "conclusion": "success",
               "duration_sec": 16,
               "html_url": "https://github.com/urunc-dev/urunc/actions/runs/25529372991/job/74932063496"
-            }
-          ],
-          "run_attempt": 1
-        },
-        {
-          "id": 25468593660,
-          "name": "Automatically close stale PRs",
-          "status": "completed",
-          "conclusion": "success",
-          "run_number": 424,
-          "created_at": "2026-05-07T00:19:11Z",
-          "updated_at": "2026-05-07T00:19:33Z",
-          "run_started_at": "2026-05-07T00:19:11Z",
-          "html_url": "https://github.com/urunc-dev/urunc/actions/runs/25468593660",
-          "jobs": [
-            {
-              "name": "stale",
-              "conclusion": "success",
-              "duration_sec": 13,
-              "html_url": "https://github.com/urunc-dev/urunc/actions/runs/25468593660/job/74727258699"
             }
           ],
           "run_attempt": 1

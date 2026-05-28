@@ -26,55 +26,7 @@ A real-time dashboard for monitoring urunc CI test status.
 
 ## Architecture
 
-```
-┌──────────────────────────────────────────────────────────────────────────┐
-│  Config layer — config.yaml                                              │
-│  ├── settings        repo, run limits                                    │
-│  ├── log_analysis    noise_patterns, failure categories + priority       │
-│  ├── notify          enabled, target_repo, label                         │
-│  └── workflows       name, description, critical flag                    │
-└──────────────────────┬───────────────────────────────────────────────────┘
-                       │ loads
-┌──────────────────────▼───────────────────────────────────────────────────┐
-│  Log analysis pipeline — main.go                                         │
-│                                                                          │
-│  GH Actions client ──► Stage 1: noise gate ──► Stage 2: category match  │
-│  (workflows_raw.json    matchesAny() strips        priority sort         │
-│   runs_raw.json)        noise_patterns             → LogSummary          │
-│         │                      ▲                        │                │
-│         │ failed runs          │ raw log lines          │ LogSnippet     │
-│         ▼                      │                        ▼                │
-│  fetchJobsAndEnrich() ─────────┘             renderSummary()             │
-│         │                                             │                  │
-│         └──────────────► buildSummary() ◄────────────┘                  │
-│                          WeatherHistory, WorkflowSummary                 │
-│                                │ writes                                  │
-│                           stats.json                                     │
-└──────────────────────┬─────────┴────────────────────────────────────────┘
-                       │ WorkflowSummary (critical workflows only)
-┌──────────────────────▼───────────────────────────────────────────────────┐
-│  Notification engine — notify.go                                         │
-│                                                                          │
-│              Notifier.Process()                                          │
-│              critical=true + anyFailed()?                                │
-│                    │                  └──── no ──► Skip                  │
-│                    ▼                                                      │
-│             findOpenIssue() (paginated title match)                      │
-│           /                    \                                         │
-│      no issue              exists + 24 h passed                          │
-│          │                         │                                     │
-│    createIssue()            addComment()                                 │
-└──────────────────────────────────────────────────────────────────────────┘
-                       │
-                  stats.json
-                       │
-┌──────────────────────▼───────────────────────────────────────────────────┐
-│  Frontend — index.html + styles.css + script.js                          │
-│  reads stats.json → renders dashboard                                    │
-│  Chart.js 2.9 — pie, doughnut, bar, line charts                          │
-└──────────────────────────────────────────────────────────────────────────┘
-
-```
+![Architecture](architecture.excalidraw.png)
 
 ## Repository Layout
 

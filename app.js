@@ -11,7 +11,7 @@
         var isLight = document.body.classList.contains('light');
         iconSun.style.display = isLight ? 'none' : '';
         iconMoon.style.display = isLight ? '' : 'none';
-        if (logo) logo.src = isLight ? 'urunc-logo-light.svg' : 'urunc-logo-dark.svg';
+        if (logo) logo.src = isLight ? './images/urunc-logo-light.svg' : './images/urunc-logo-dark.svg';
     }
     syncIcons();
 
